@@ -125,16 +125,25 @@
 
   <script>
     const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userMessage');
+
+    // 1. Listen for the Enter key
+    userInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // prevents form submission / default behavior
+        sendMessage();
+      }
+    });
 
     async function sendMessage() {
-      const userMessage = document.getElementById('userMessage').value;
+      const userMessage = userInput.value;
       if (!userMessage.trim()) return;
 
       // Display user's message
       displayMessage(userMessage, 'user');
 
       // Clear the input field
-      document.getElementById('userMessage').value = '';
+      userInput.value = '';
 
       try {
         // Send the message to the chatbot API
@@ -168,7 +177,6 @@
       // Auto-scroll to the bottom
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-
   </script>
 </body>
 </html>
