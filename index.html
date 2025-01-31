@@ -1,153 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Drives Bot</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            color: black;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 90%;
-            max-width: 600px;
-            background: #f5f5f5;
-            border: 1px solid #a4262c;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .chat-header {
-            background-color: #a4262c;
-            color: black;
-            padding: 15px;
-            text-align: center;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .chat-header img {
-            height: 50px;
-        }
-        .chat-messages {
-            padding: 20px;
-            height: 400px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #ffffff;
-        }
-        .message {
-            padding: 10px 15px;
-            border-radius: 20px;
-            max-width: 75%;
-            word-wrap: break-word;
-        }
-        .message.user {
-            align-self: flex-end;
-            background-color: #a4262c;
-            color: white;
-        }
-        .message.bot {
-            align-self: flex-start;
-            background-color: #e6e6e6;
-            color: black;
-        }
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #a4262c;
-            gap: 10px;
-            background-color: #a4262c;
-        }
-        .chat-input input {
-            flex-grow: 1;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #000000;
-            background-color: white;
-            color: black;
-        }
-        .chat-input input::placeholder {
-            color: #888888;
-        }
-        .chat-input button {
-            padding: 10px 15px;
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .chat-input button:hover {
-            background-color: #333333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Drives Bot</title>
+  <style>
+    /* Make the html/body fill the browser window. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background-color: #ffffff;
+      color: black;
+    }
+
+    /* The container is now full height and centered in the page. */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      margin: 0 auto;
+      max-width: 1200px; /* or whatever max width you prefer */
+      border: 1px solid #a4262c;
+      border-radius: 0; /* set to 8px if you want round corners */
+      background: #f5f5f5;
+    }
+
+    /* Header area (fixed height). */
+    .chat-header {
+      background-color: #a4262c;
+      color: black;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .chat-header img {
+      height: 50px;
+    }
+
+    /* The main messages area takes all available space (flex-grow: 1). */
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Each message block. */
+    .message {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 75%;
+      word-wrap: break-word;
+      white-space: pre-wrap; /* ensures newlines are respected */
+    }
+    .message.user {
+      align-self: flex-end;
+      background-color: #a4262c;
+      color: white;
+    }
+    .message.bot {
+      align-self: flex-start;
+      background-color: #e6e6e6;
+      color: black;
+    }
+
+    /* Input area (fixed height). */
+    .chat-input {
+      display: flex;
+      padding: 15px;
+      border-top: 1px solid #a4262c;
+      gap: 10px;
+      background-color: #a4262c;
+    }
+    .chat-input input {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #000000;
+      background-color: white;
+      color: black;
+    }
+    .chat-input input::placeholder {
+      color: #888888;
+    }
+    .chat-input button {
+      padding: 10px 15px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .chat-input button:hover {
+      background-color: #333333;
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <img src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg" alt="BioBridge Global Logo" />
-            Welcome to the Mobile Drives Bot!
-        </div>
-        <div id="chatMessages" class="chat-messages"></div>
-        <div class="chat-input">
-            <input type="text" id="userMessage" placeholder="Type your message here..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <img src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg"
+           alt="BioBridge Global Logo" />
+      Welcome to the Mobile Drives Bot!
     </div>
 
-    <script>
-        const chatMessages = document.getElementById('chatMessages');
+    <div id="chatMessages" class="chat-messages"></div>
 
-        async function sendMessage() {
-            const userMessage = document.getElementById('userMessage').value;
-            if (!userMessage.trim()) return;
+    <div class="chat-input">
+      <input type="text" id="userMessage" placeholder="Type your message here..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
-            // Display user's message
-            displayMessage(userMessage, 'user');
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
 
-            // Clear the input field
-            document.getElementById('userMessage').value = '';
+    async function sendMessage() {
+      const userMessage = document.getElementById('userMessage').value;
+      if (!userMessage.trim()) return;
 
-            try {
-                // Send the message to the chatbot API
-                const response = await fetch("https://apo-production-7053.up.railway.app/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: userMessage })
-                });
+      // Display user's message
+      displayMessage(userMessage, 'user');
 
-                const data = await response.json();
+      // Clear the input field
+      document.getElementById('userMessage').value = '';
 
-                // Display the bot's response
-                displayMessage(data.response, 'bot');
-            } catch (error) {
-                displayMessage("Error communicating with the chatbot. Please try again.", 'bot');
-            }
-        }
+      try {
+        // Send the message to the chatbot API
+        const response = await fetch("YOUR_API_ENDPOINT/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage })
+        });
 
-        function displayMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender);
-            messageDiv.textContent = message;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the bottom
-        }
-    </script>
+        const data = await response.json();
+        // Display the bot's response
+        displayMessage(data.response, 'bot');
+      } catch (error) {
+        displayMessage("Error communicating with the chatbot. Please try again.", 'bot');
+      }
+    }
+
+    function displayMessage(message, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', sender);
+
+      // Convert **bold** to <strong>, line breaks to <br>, etc.
+      // Quick example for bold: replace **text** with <strong>text</strong>.
+      // Then turn newlines into <br> for spacing.
+      let formatted = message
+        // Bold conversion: **text** → <strong>text</strong>
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Replace double newlines (for paragraphs) with <br><br>
+        .replace(/\n\n/g, '<br><br>')
+        // Replace any single newline with <br>
+        .replace(/\n/g, '<br>');
+
+      // You can add more replacements if needed (italics, bullet points, etc.)
+
+      messageDiv.innerHTML = formatted;
+      chatMessages.appendChild(messageDiv);
+
+      // Auto-scroll to the bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+  </script>
 </body>
 </html>
