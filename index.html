@@ -124,35 +124,35 @@
     });
 
     async function sendMessage() {
-      const userMessage = userInput.value.trim();
-      if (!userMessage) return;
+    const userMessage = userInput.value.trim();
+    if (!userMessage) return;
 
-      // Display user's message
-      displayMessage(userMessage, 'user');
+    // Display user's message
+    displayMessage(userMessage, 'user');
 
-      // Clear the input field
-      userInput.value = '';
+    // Clear the input field
+    userInput.value = '';
 
-      try {
-        // Send message to backend API
+    try {
+        // ✅ Ensure the request goes to your backend API, NOT OpenAI directly
         const response = await fetch("https://apo-production-7053.up.railway.app/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMessage })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
         });
 
         const data = await response.json();
 
-        // Handle API errors
+        // Handle errors
         if (response.status !== 200 || data.error) {
-          displayMessage("Error: " + (data.error || "Chatbot is unavailable."), 'bot');
+            displayMessage("Error: " + (data.error || "Chatbot is unavailable."), 'bot');
         } else {
-          displayMessage(data.response, 'bot');
+            displayMessage(data.response, 'bot');
         }
-      } catch (error) {
+    } catch (error) {
         displayMessage("Error communicating with the chatbot. Please try again.", 'bot');
-      }
     }
+}
 
     function displayMessage(message, sender) {
       const messageDiv = document.createElement('div');
