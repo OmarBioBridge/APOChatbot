@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mobile Drives Bot</title>
   <style>
-    /* Make the html/body fill the browser window. */
     html, body {
       margin: 0;
       padding: 0;
@@ -14,20 +13,15 @@
       background-color: #ffffff;
       color: black;
     }
-
-    /* The container is now full height and centered in the page. */
     .chat-container {
       display: flex;
       flex-direction: column;
       height: 100%;
+      max-width: 1200px;
       margin: 0 auto;
-      max-width: 1200px; /* or whatever max width you prefer */
       border: 1px solid #a4262c;
-      border-radius: 0; /* set to 8px if you want round corners */
       background: #f5f5f5;
     }
-
-    /* Header area (fixed height). */
     .chat-header {
       background-color: #a4262c;
       color: black;
@@ -42,8 +36,6 @@
     .chat-header img {
       height: 50px;
     }
-
-    /* The main messages area takes all available space (flex-grow: 1). */
     .chat-messages {
       flex: 1;
       padding: 20px;
@@ -53,14 +45,12 @@
       flex-direction: column;
       gap: 10px;
     }
-
-    /* Each message block. */
     .message {
       padding: 10px 15px;
       border-radius: 20px;
       max-width: 75%;
       word-wrap: break-word;
-      white-space: pre-wrap; /* ensures newlines are respected */
+      white-space: pre-wrap;
     }
     .message.user {
       align-self: flex-end;
@@ -72,8 +62,6 @@
       background-color: #e6e6e6;
       color: black;
     }
-
-    /* Input area (fixed height). */
     .chat-input {
       display: flex;
       padding: 15px;
@@ -127,17 +115,17 @@
     const chatMessages = document.getElementById('chatMessages');
     const userInput = document.getElementById('userMessage');
 
-    // 1. Listen for the Enter key
+    // Send message when Enter key is pressed
     userInput.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
-        event.preventDefault(); // prevents form submission / default behavior
+        event.preventDefault();
         sendMessage();
       }
     });
 
     async function sendMessage() {
-      const userMessage = userInput.value;
-      if (!userMessage.trim()) return;
+      const userMessage = userInput.value.trim();
+      if (!userMessage) return;
 
       // Display user's message
       displayMessage(userMessage, 'user');
@@ -146,7 +134,7 @@
       userInput.value = '';
 
       try {
-        // Send the message to the chatbot API
+        // Send message to backend API
         const response = await fetch("https://apo-production-7053.up.railway.app/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -154,8 +142,13 @@
         });
 
         const data = await response.json();
-        // Display the bot's response
-        displayMessage(data.response, 'bot');
+
+        // Handle API errors
+        if (response.status !== 200 || data.error) {
+          displayMessage("Error: " + (data.error || "Chatbot is unavailable."), 'bot');
+        } else {
+          displayMessage(data.response, 'bot');
+        }
       } catch (error) {
         displayMessage("Error communicating with the chatbot. Please try again.", 'bot');
       }
@@ -164,14 +157,7 @@
     function displayMessage(message, sender) {
       const messageDiv = document.createElement('div');
       messageDiv.classList.add('message', sender);
-
-      // Convert **bold** to <strong>, line breaks to <br>, etc.
-      let formatted = message
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\n/g, '<br>');
-
-      messageDiv.innerHTML = formatted;
+      messageDiv.innerHTML = message.replace(/\n/g, '<br>'); // Preserve newlines
       chatMessages.appendChild(messageDiv);
 
       // Auto-scroll to the bottom
