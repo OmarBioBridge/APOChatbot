@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mobile Drives Bot</title>
   <style>
+    /* Basic styling */
     html, body {
       margin: 0;
       padding: 0;
@@ -92,13 +93,27 @@
     .chat-input button:hover {
       background-color: #333333;
     }
+
+    /* Container for displaying graphs */
+    #graphContainer {
+      display: none;
+      text-align: center;
+      margin: 10px;
+    }
+    #graphImage {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
 
   <div class="chat-container">
     <div class="chat-header">
-      <img src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg" alt="BioBridge Global Logo" />
+      <img 
+        src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg"
+        alt="BioBridge Global Logo" 
+      />
       Welcome to the Mobile Drives Bot!
     </div>
 
@@ -110,8 +125,8 @@
     </div>
 
     <!-- Optional: Container for displaying graphs -->
-    <div id="graphContainer" style="display: none; text-align: center; margin: 10px;">
-      <img id="graphImage" src="" alt="Graph will appear here" style="max-width: 100%; height: auto;">
+    <div id="graphContainer">
+      <img id="graphImage" src="" alt="Graph will appear here">
     </div>
   </div>
 
@@ -140,24 +155,26 @@
       userInput.value = '';
 
       try {
+        // IMPORTANT: Replace the fetch URL with your Railway domain.
+        // The example below uses `apo-production-7053.up.railway.app` as a placeholder.
         const response = await fetch("https://apo-production-7053.up.railway.app/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",  // Ensures cookies (session data) are sent with the request
-          body: JSON.stringify({ message: message })
+          credentials: "include",  // Ensures cookies (session data) are sent
+          body: JSON.stringify({ message })
         });
 
         const data = await response.json();
 
-        // Check if the response is a Base64-encoded image (graph)
+        // If the response is a Base64-encoded image (graph)
         if (data.response.startsWith("data:image/png;base64,")) {
           graphImage.src = data.response;
           graphContainer.style.display = "block";
           displayMessage("Graph generated below:", "bot");
         } else {
-          // Hide graph container if response is textual
+          // If it's not an image, hide the graph container and show text
           graphContainer.style.display = "none";
-          displayMessage(data.response, "bot");
+          displayMessage(data.response, 'bot');
         }
       } catch (error) {
         displayMessage("Error communicating with the chatbot. Please try again.", 'bot');
@@ -167,14 +184,17 @@
     function displayMessage(message, sender) {
       const messageDiv = document.createElement('div');
       messageDiv.classList.add('message', sender);
-      // If the message is a Base64 image string, display it as an image.
+
+      // If the message is a Base64 image string, display it as an image
       if (message.startsWith("data:image/png;base64,")) {
-        messageDiv.innerHTML = `<img src="${message}" alt="Graph" style="max-width: 100%; height: auto;">`;
+        messageDiv.innerHTML = `<img src="${message}" alt="Graph">`;
       } else {
+        // Replace newlines with <br> for multi-line text
         messageDiv.innerHTML = message.replace(/\n/g, '<br>');
       }
+
       chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to bottom
     }
   </script>
 </body>
