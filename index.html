@@ -98,8 +98,7 @@
 
   <div class="chat-container">
     <div class="chat-header">
-      <img src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg"
-           alt="BioBridge Global Logo" />
+      <img src="https://biobridgeglobal.org/wp-content/uploads/2020/06/biobridge-logo.svg" alt="BioBridge Global Logo" />
       Welcome to the Mobile Drives Bot!
     </div>
 
@@ -109,8 +108,8 @@
       <input type="text" id="userMessage" placeholder="Type your message here..." />
       <button onclick="sendMessage()">Send</button>
     </div>
-    
-    <!-- Added an image container for graphs -->
+
+    <!-- Optional: Container for displaying graphs -->
     <div id="graphContainer" style="display: none; text-align: center; margin: 10px;">
       <img id="graphImage" src="" alt="Graph will appear here" style="max-width: 100%; height: auto;">
     </div>
@@ -144,20 +143,19 @@
         const response = await fetch("https://apo-production-7053.up.railway.app/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",  // Ensures cookies (session data) are sent with the request
           body: JSON.stringify({ message: message })
         });
 
         const data = await response.json();
 
-        // Check if the response looks like a Base64-encoded image
+        // Check if the response is a Base64-encoded image (graph)
         if (data.response.startsWith("data:image/png;base64,")) {
-          // Display the image in the graph container
           graphImage.src = data.response;
           graphContainer.style.display = "block";
-          // Also display a text message if you want (optional)
           displayMessage("Graph generated below:", "bot");
         } else {
-          // Hide graph container if the response is text
+          // Hide graph container if response is textual
           graphContainer.style.display = "none";
           displayMessage(data.response, "bot");
         }
@@ -169,8 +167,7 @@
     function displayMessage(message, sender) {
       const messageDiv = document.createElement('div');
       messageDiv.classList.add('message', sender);
-
-      // Check if the message is a Base64 image string; if so, create an image element.
+      // If the message is a Base64 image string, display it as an image.
       if (message.startsWith("data:image/png;base64,")) {
         messageDiv.innerHTML = `<img src="${message}" alt="Graph" style="max-width: 100%; height: auto;">`;
       } else {
